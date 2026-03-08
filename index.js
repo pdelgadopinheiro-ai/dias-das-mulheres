@@ -13,8 +13,9 @@ let imagens = [];
 let indexAtual = 0;
 const STORAGE_KEY_IMAGENS = "diaMulheresImagens";
 const STORAGE_KEY_INDEX = "diaMulheresIndexAtual";
-const SUPABASE_URL = "COLOQUE_AQUI_SUA_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "COLOQUE_AQUI_SUA_SUPABASE_ANON_KEY";
+const APP_CONFIG = window.APP_CONFIG || {};
+const SUPABASE_URL = APP_CONFIG.supabaseUrl || "";
+const SUPABASE_ANON_KEY = APP_CONFIG.supabaseAnonKey || "";
 const SUPABASE_BUCKET = "fotos";
 const SUPABASE_TABLE = "fotos_carrossel";
 let supabaseClient = null;
@@ -62,11 +63,14 @@ function carregarEstadoLocal() {
 }
 
 function supabaseConfigurado() {
+    const urlValida = typeof SUPABASE_URL === "string" && /^https:\/\/.+\.supabase\.co$/i.test(SUPABASE_URL.trim());
+    const keyValida = typeof SUPABASE_ANON_KEY === "string" && SUPABASE_ANON_KEY.trim().length > 20;
+
     return (
-        SUPABASE_URL &&
-        SUPABASE_ANON_KEY &&
-        !SUPABASE_URL.includes("COLOQUE_AQUI") &&
-        !SUPABASE_ANON_KEY.includes("COLOQUE_AQUI")
+        urlValida &&
+        keyValida &&
+        !SUPABASE_URL.includes("COLE_AQUI") &&
+        !SUPABASE_ANON_KEY.includes("COLE_AQUI")
     );
 }
 
@@ -93,6 +97,20 @@ function definirUploadEmAndamento(ativo) {
     buttonAddFoto.disabled = ativo;
     fotoInput.disabled = ativo;
     buttonAddFoto.textContent = ativo ? "Enviando fotos..." : "Adicionar Fotos";
+}
+
+function mostrarAvisoConfiguracaoSupabase() {
+    if (document.getElementById("avisoSupabase")) return;
+    if (!carousel || !carousel.parentNode) return;
+
+    const aviso = document.createElement("p");
+    aviso.id = "avisoSupabase";
+    aviso.style.margin = "8px 0 0";
+    aviso.style.textAlign = "center";
+    aviso.style.color = "#8b1f4d";
+    aviso.textContent = "Nuvem não configurada: as fotos ficam apenas neste dispositivo.";
+
+    carousel.parentNode.insertBefore(aviso, carousel.nextSibling);
 }
 
 async function carregarImagensNuvem() {
@@ -330,6 +348,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     } else {
         console.warn("Supabase não configurado. Usando apenas armazenamento local.");
+        mostrarAvisoConfiguracaoSupabase();
     }
 
     adicionarSpotifyAutomatico(false);
