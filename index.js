@@ -14,8 +14,8 @@ let indexAtual = 0;
 const STORAGE_KEY_IMAGENS = "diaMulheresImagens";
 const STORAGE_KEY_INDEX = "diaMulheresIndexAtual";
 const APP_CONFIG = window.APP_CONFIG || {};
-const SUPABASE_URL = APP_CONFIG.supabaseUrl || "";
-const SUPABASE_ANON_KEY = APP_CONFIG.supabaseAnonKey || "";
+const SUPABASE_URL = String(APP_CONFIG.supabaseUrl || "").trim().replace(/\/+$/, "");
+const SUPABASE_ANON_KEY = String(APP_CONFIG.supabaseAnonKey || "").trim();
 const SUPABASE_BUCKET = "fotos";
 const SUPABASE_TABLE = "fotos_carrossel";
 let supabaseClient = null;
@@ -63,8 +63,14 @@ function carregarEstadoLocal() {
 }
 
 function supabaseConfigurado() {
-    const urlValida = typeof SUPABASE_URL === "string" && /^https:\/\/.+\.supabase\.co$/i.test(SUPABASE_URL.trim());
-    const keyValida = typeof SUPABASE_ANON_KEY === "string" && SUPABASE_ANON_KEY.trim().length > 20;
+    let urlValida = false;
+    try {
+        const parsedUrl = new URL(SUPABASE_URL);
+        urlValida = parsedUrl.protocol === "https:" && parsedUrl.hostname.includes(".supabase.");
+    } catch (e) {
+        urlValida = false;
+    }
+    const keyValida = SUPABASE_ANON_KEY.length > 20;
 
     return (
         urlValida &&
@@ -108,7 +114,7 @@ function mostrarAvisoConfiguracaoSupabase() {
     aviso.style.margin = "8px 0 0";
     aviso.style.textAlign = "center";
     aviso.style.color = "#8b1f4d";
-    aviso.textContent = "Nuvem não configurada: as fotos ficam apenas neste dispositivo.";
+    aviso.textContent = "Nuvem não configurada: as fotos ficam apenas neste dispositivo. Edite config.js.";
 
     carousel.parentNode.insertBefore(aviso, carousel.nextSibling);
 }
@@ -185,7 +191,8 @@ if (fotoInput) {
                 atualizarCarrossel();
             } catch (erro) {
                 console.error("Falha ao enviar fotos para a nuvem.", erro);
-                alert("Não foi possível enviar as fotos para a nuvem.");
+                const mensagemErro = erro && erro.message ? erro.message : "Erro desconhecido";
+                alert(`Não foi possível enviar as fotos para a nuvem.\n${mensagemErro}`);
             } finally {
                 definirUploadEmAndamento(false);
                 fotoInput.value = "";

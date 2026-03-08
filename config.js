@@ -1,4 +1,4 @@
 window.APP_CONFIG = {
-    supabaseUrl: "COLE_AQUI_SUA_SUPABASE_URL",
-    supabaseAnonKey: "COLE_AQUI_SUA_SUPABASE_ANON_KEY"
-};
+    supabaseUrl: "https://kdjoobenwmcdrfwaqxos.supabase.co",
+    supabaseAnonKey: "sb_publishable_hGuQmdAsB2uu5GXpaWNzBQ_t2Rxavfj"
+    };
