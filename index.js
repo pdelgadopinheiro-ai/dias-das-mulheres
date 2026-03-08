@@ -251,7 +251,7 @@ if (prevButton) {
 // =========================
 
 // Troque este link pelo da música/playlist/álbum que você quiser tocar.
-const SPOTIFY_LINK_FIXO = "https://open.spotify.com/intl-pt/track/4f4WCZ4eOxQW6Jn4nu3sqZ?si=54fc52fcf80d4810";
+const SPOTIFY_LINK_FIXO = "https://open.spotify.com/track/6fiHLddllyCPabVqIPwWG0?si=SPej1_71Q7OBd1b3zF0_rw ";
 
 function montarEmbedSpotify(link) {
     let embed = "";
